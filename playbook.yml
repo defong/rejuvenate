@@ -1,0 +1,224 @@
+---
+- name: Setup Podman Quadlet with Caddy Reverse Proxy
+  hosts: localhost
+  become: no
+  vars:
+    user_name: "{{ ansible_user_id }}"
+    quadlet_dir: "/home/{{ user_name }}/.config/containers/systemd"
+    caddy_config_dir: "/etc/caddy"
+    domain: "localhost"
+
+  tasks:
+    - name: Print quadlet dir
+      debug:
+        msg: "Quadlet dir: {{ quadlet_dir }}"
+      become: no
+
+    - name: Install required packages
+      pacman:
+        name:
+          - podman
+          - caddy
+          - systemd
+        state: present
+
+    - name: Create quadlet directory
+      file:
+        path: "{{ quadlet_dir }}"
+        state: directory
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0755'
+      become_user: "{{ user_name }}"
+
+    - name: Create pod quadlet file
+      copy:
+        content: |
+          [Unit]
+          Description=Development pod
+
+          [Pod]
+          Network=pasta:-t,5432,-t,5050,-t,8080
+
+          [Install]
+          WantedBy=default.target
+        dest: "{{ quadlet_dir }}/dev.pod"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+      become_user: "{{ user_name }}"
+
+    - name: Create PostgreSQL quadlet file
+      copy:
+        content: |
+          [Unit]
+          Description=PostgreSQL database
+
+          [Container]
+          Image=docker.io/postgres:16
+          Pod=dev.pod
+          # Environment=POSTGRES_DB=postgres
+          Environment=POSTGRES_USER=postgres
+          Environment=POSTGRES_PASSWORD=postgres
+          Volume=postgres-data:/var/lib/postgresql/data
+
+          [Install]
+          WantedBy=default.target
+        dest: "{{ quadlet_dir }}/postgres.container"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+      become_user: "{{ user_name }}"
+
+    - name: Create pgAdmin quadlet file
+      copy:
+        content: |
+          [Unit]
+          Description=pgAdmin web interface
+
+          [Container]
+          Image=docker.io/dpage/pgadmin4:latest
+          Pod=dev.pod
+          Environment=PGADMIN_DEFAULT_EMAIL=admin@test.com
+          Environment=PGADMIN_DEFAULT_PASSWORD=admin
+          Environment=PGADMIN_LISTEN_PORT=5050
+          Volume=pgadmin-data:/var/lib/pgadmin
+
+          [Install]
+          WantedBy=default.target
+        dest: "{{ quadlet_dir }}/pgadmin.container"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+      become_user: "{{ user_name }}"
+
+    - name: Create Dashy configuration
+      copy:
+        content: |
+          pageInfo:
+            title: Development Dashboard
+            description: Local development services
+
+          sections:
+            - name: Database
+              items:
+                - title: pgAdmin
+                  url: http://pgadmin.localhost
+                  icon: hl-pgadmin
+                  description: PostgreSQL administration
+
+            - name: Database Connection Info
+              items:
+                - title: PostgreSQL
+                  description: |
+                    Host: localhost
+                    Port: 5432
+                    Database: postgres
+                    User: postgres
+                    Password: postgres
+                  icon: hl-postgresql
+        dest: /tmp/dashy-config.yml
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+
+    - name: Create Dashy quadlet file
+      copy:
+        content: |
+          [Unit]
+          Description=Dashy dashboard
+
+          [Container]
+          Image=docker.io/lissy93/dashy:latest
+          Pod=dev.pod
+          Volume=/tmp/dashy-config.yml:/app/user-data/conf.yml:ro
+
+          [Install]
+          WantedBy=default.target
+        dest: "{{ quadlet_dir }}/dashy.container"
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
+        mode: '0644'
+      become_user: "{{ user_name }}"
+
+    - name: Create Caddy configuration directory
+      file:
+        path: "{{ caddy_config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create Caddyfile
+      become: yes
+      copy:
+        content: |
+          # Global options
+          {
+            auto_https disable_redirects
+            local_certs
+          }
+
+          # Dashy dashboard
+          http://dashy.localhost {
+            reverse_proxy 127.0.0.1:8080
+          }
+
+          # pgAdmin
+          http://pgadmin.localhost {
+            reverse_proxy 127.0.0.1:5050
+          }
+
+          # PostgreSQL (direct access if needed)
+          # Note: PostgreSQL uses TCP, not HTTP
+          # Access via: psql -h localhost -p 5432 -U postgres -d postgres
+
+          # Redirect root to dashy
+          http://localhost {
+            redir http://dashy.localhost permanent
+          }
+        dest: "{{ caddy_config_dir }}/Caddyfile"
+        mode: '0644'
+
+    - name: Create Caddy service override directory
+      file:
+        path: /etc/systemd/system/caddy.service.d
+        state: directory
+        mode: '0755'
+
+    - name: Add localhost entries to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1    dashy.localhost pgadmin.localhost"
+        state: present
+
+    - name: Reload systemd daemon for user
+      systemd:
+        daemon_reload: yes
+        scope: user
+      become_user: "{{ user_name }}"
+
+    - name: Enable and start Caddy service
+      systemd:
+        name: caddy
+        enabled: yes
+        state: started
+        daemon_reload: yes
+
+    - name: Enable and start user services
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: started
+        scope: user
+        daemon_reload: yes
+      become_user: "{{ user_name }}"
+      loop:
+        - dev-pod.service
+        - postgres.service
+        - pgadmin.service
+        - dashy.service
+
+  handlers:
+    - name: restart caddy
+      systemd:
+        name: caddy
+        state: restarted
