@@ -1,0 +1,38 @@
+---
+# User configuration
+user_name: "{{ ansible_user_id }}"
+user_home: "/home/{{ user_name }}"
+
+# Directory paths
+config_dir: "{{ user_home }}/.config"
+quadlet_dir: "{{ config_dir }}/containers/systemd"
+systemd_user_dir: "{{ config_dir }}/systemd/user"
+caddy_dir: "{{ user_home }}/.local/share/caddy"
+
+# Service configuration
+postgres_user: "postgres"
+postgres_password: "postgres"
+postgres_db: "postgres"
+pgadmin_email: "admin@test.com"
+pgadmin_password: "admin"
+
+# Network configuration
+postgres_port: 5432
+pgadmin_port: 5050
+dashy_port: 8080
+
+# Service hostnames
+services:
+  - name: "dashy"
+    hostname: "dashy.localhost"
+    port: "{{ dashy_port }}"
+    url: "http://dashy.localhost"
+    description: "Dashboard"
+  - name: "pgadmin"
+    hostname: "pgadmin.localhost"
+    port: "{{ pgadmin_port }}"
+    url: "http://pgadmin.localhost"
+    description: "pgAdmin"
+
+# Base hostname for /etc/hosts
+base_hostname: "localhost"
