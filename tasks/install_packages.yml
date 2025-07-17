@@ -4,3 +4,8 @@
     name: [podman, caddy, systemd]
     state: present
   become: yes
+  tags:
+    - packages
+    - install
+    - system
+    - never

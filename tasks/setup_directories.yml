@@ -8,3 +8,7 @@
     - "{{ quadlet_dir }}"
     - "{{ systemd_user_dir }}"
     - "{{ caddy_dir }}"
+  tags:
+    - directories
+    - setup
+    - config

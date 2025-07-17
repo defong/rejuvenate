@@ -85,46 +85,32 @@ ansible-playbook site.yml -K --tags "packages,directories,quadlets"
 ### Service Access
 
 After successful deployment, access services at:
-- **Dashboard**: http://dashy.localhost
-- **pgAdmin**: http://pgadmin.localhost
-- **PostgreSQL**: localhost:5432 (direct connection)
+{% for service in services %}
+- **{{ service.description }}**: {{ service.url }}
+{% endfor %}
+- **PostgreSQL**: {{ base_hostname }}:{{ postgres_port }} (direct connection)
 
 ## Available Tags
 
 ### Functional Tags (by what they do)
-- `packages` - Install system packages
-- `directories` - Create config directories
-- `quadlets` - Create all quadlet files
-- `config` - All configuration tasks
-- `services` - Service management tasks
-- `start` - Start services
-- `info` - Display information
+{% for tag in functional_tags %}
+- `{{ tag.name }}` - {{ tag.description }}
+{% endfor %}
 
 ### Component Tags (by what they affect)
-- `install` - Installation tasks
-- `setup` - Initial setup tasks
-- `podman` - Podman-related tasks
-- `caddy` - Caddy-related tasks
-- `systemd` - Systemd-related tasks
-- `database` - Database container tasks
-- `containers` - Container-related tasks
-- `pod` - Pod-related tasks
-- `proxy` - Reverse proxy tasks
-- `dashboard` - Dashboard tasks
-- `hosts` - /etc/hosts modification
-- `network` - Network-related tasks
-- `system` - System-level tasks
+{% for tag in component_tags %}
+- `{{ tag.name }}` - {{ tag.description }}
+{% endfor %}
 
 ### Special Tags
-- `never` - Tasks that only run when explicitly called
-- `reload` - Systemd daemon reload
-- `wait` - Wait/pause tasks
-- `display` - Display output tasks
+{% for tag in special_tags %}
+- `{{ tag.name }}` - {{ tag.description }}
+{% endfor %}
 
 ## Default Credentials
 
-- **pgAdmin**: admin@test.com / admin
-- **PostgreSQL**: postgres / postgres / postgres
+- **pgAdmin**: {{ pgadmin_email }} / {{ pgadmin_password }}
+- **PostgreSQL**: {{ postgres_user }} / {{ postgres_password }} / {{ postgres_db }}
 
 ## Key Features
 
@@ -164,7 +150,7 @@ journalctl --user -u dev-pod.service -f
 ## Configuration Files Location
 
 ```
-/home/defong/.config/
+{{ config_dir }}/
 ├── containers/systemd/     # Quadlet files
 │   ├── dev.pod
 │   ├── postgres.container
@@ -173,7 +159,7 @@ journalctl --user -u dev-pod.service -f
 └── systemd/user/           # User systemd services
     └── caddy.service
 
-/home/defong/.local/share/caddy/       # Caddy configuration
+{{ caddy_dir }}/       # Caddy configuration
 ├── Caddyfile               # Auto-formatted by handler
 └── dashy-config.yml
 ```
@@ -207,7 +193,7 @@ The playbook will automatically format the Caddyfile and reload services as need
 
 4. **Caddy configuration**: Check Caddyfile syntax
    ```bash
-   caddy validate --config /home/defong/.local/share/caddy/Caddyfile
+   caddy validate --config {{ caddy_dir }}/Caddyfile
    ```
 
 ### Cleanup
@@ -221,13 +207,13 @@ systemctl --user stop dev-pod.service caddy.service
 systemctl --user disable dev-pod.service caddy.service
 
 # Remove configuration files
-rm -rf /home/defong/.config/containers/systemd/dev.pod
-rm -rf /home/defong/.config/containers/systemd/*.container
-rm -rf /home/defong/.config/systemd/user/caddy.service
-rm -rf /home/defong/.local/share/caddy/
+rm -rf {{ quadlet_dir }}/dev.pod
+rm -rf {{ quadlet_dir }}/*.container
+rm -rf {{ systemd_user_dir }}/caddy.service
+rm -rf {{ caddy_dir }}/
 
 # Remove /etc/hosts entries (manual)
-sudo sed -i '/dashy.localhost\|pgadmin.localhost/d' /etc/hosts
+sudo sed -i '/{{ services | map(attribute='hostname') | join('\\|') }}/d' /etc/hosts
 ```
 
 ## Generated Documentation
@@ -238,6 +224,6 @@ ansible-playbook site.yml -K --tags "info"
 ```
 
 ---
-*Last generated: 2025-07-17T20:15:05Z*
-*Project path: /home/defong/Repos/Personal/rejuvenate*
+*Last generated: {{ ansible_date_time.iso8601 }}*
+*Project path: {{ project_dir }}*
 

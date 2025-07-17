@@ -4,6 +4,10 @@
     src: templates/dashy-config.yml.j2
     dest: "{{ caddy_dir }}/dashy-config.yml"
     mode: '0644'
+  tags:
+    - caddy
+    - dashboard
+    - config
 
 - name: Create Caddyfile
   template:
@@ -11,12 +15,22 @@
     dest: "{{ caddy_dir }}/Caddyfile"
     mode: '0644'
   notify: format_caddyfile
+  tags:
+    - caddy
+    - proxy
+    - config
+    - network
 
 - name: Create Caddy systemd service
   template:
     src: templates/caddy.service.j2
     dest: "{{ systemd_user_dir }}/caddy.service"
     mode: '0644'
+  tags:
+    - caddy
+    - systemd
+    - proxy
+    - config
 
 - name: Add localhost entries to /etc/hosts
   lineinfile:
@@ -24,3 +38,9 @@
     line: "127.0.0.1    {{ services | map(attribute='hostname') | join(' ') }}"
     state: present
   become: yes
+  tags:
+    - hosts
+    - network
+    - system
+    - caddy
+    - never

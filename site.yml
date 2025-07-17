@@ -8,22 +8,52 @@
   tasks:
     - name: Install required packages
       import_tasks: tasks/install_packages.yml
+      tags:
+        - packages
+        - install
+        - system
 
     - name: Setup directories
       import_tasks: tasks/setup_directories.yml
+      tags:
+        - directories
+        - setup
+        - config
 
     - name: Create Podman quadlet files
       import_tasks: tasks/create_quadlets.yml
+      tags:
+        - quadlets
+        - containers
+        - pod
+        - podman
+        - config
 
     - name: Setup Caddy configuration
       import_tasks: tasks/setup_caddy.yml
+      tags:
+        - caddy
+        - proxy
+        - config
+        - hosts
+        - network
 
     - name: Configure system services
       import_tasks: tasks/configure_services.yml
+      tags:
+        - services
+        - systemd
+        - start
+
+    - name: Generate README documentation
+      import_tasks: tasks/generate_readme.yml
+      tags:
+        - info
+        - display
+        - never
 
     - name: Display service information
       import_tasks: tasks/display_info.yml
-
-
-
-
+      tags:
+        - info
+        - display

@@ -3,6 +3,10 @@
   systemd:
     daemon_reload: yes
     scope: user
+  tags:
+    - systemd
+    - reload
+    - services
 
 - name: Enable and start pod service
   systemd:
@@ -10,17 +14,47 @@
     enabled: yes
     state: started
     scope: user
+  tags:
+    - services
+    - start
+    - systemd
+    - pod
 
-- name: Enable and start container services
+- name: Enable and start PostgreSQL service
   systemd:
-    name: "{{ item }}.service"
+    name: postgres.service
     enabled: yes
     state: started
     scope: user
-  loop:
-    - postgres
-    - pgadmin
-    - dashy
+  tags:
+    - services
+    - start
+    - systemd
+    - database
+
+- name: Enable and start pgAdmin service
+  systemd:
+    name: pgadmin.service
+    enabled: yes
+    state: started
+    scope: user
+  tags:
+    - services
+    - start
+    - systemd
+    - database
+
+- name: Enable and start Dashy service
+  systemd:
+    name: dashy.service
+    enabled: yes
+    state: started
+    scope: user
+  tags:
+    - services
+    - start
+    - systemd
+    - dashboard
 
 - name: Enable and start Caddy service
   systemd:
@@ -28,3 +62,9 @@
     enabled: yes
     state: started
     scope: user
+  tags:
+    - services
+    - start
+    - systemd
+    - caddy
+    - proxy
