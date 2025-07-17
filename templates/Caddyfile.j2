@@ -8,6 +8,6 @@
 }
 
 {% endfor %}
-{{ base_hostname }} {
-  redir http://dashy.localhost permanent
+{{ base_url }} {
+  redir {{ base_redirect }} permanent
 }

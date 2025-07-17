@@ -36,3 +36,5 @@ services:
 
 # Base hostname for /etc/hosts
 base_hostname: "localhost"
+base_url: "http://localhost"
+base_redirect: "http://dashy.localhost"
