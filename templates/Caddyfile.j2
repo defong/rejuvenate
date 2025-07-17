@@ -1,0 +1,13 @@
+{
+  auto_https off
+}
+
+{% for service in services %}
+{{ service.url }} {
+  reverse_proxy 127.0.0.1:{{ service.port }}
+}
+
+{% endfor %}
+{{ base_hostname }} {
+  redir http://dashy.localhost permanent
+}

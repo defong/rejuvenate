@@ -1,0 +1,26 @@
+---
+- name: Create Dashy configuration
+  template:
+    src: templates/dashy-config.yml.j2
+    dest: "{{ caddy_dir }}/dashy-config.yml"
+    mode: '0644'
+
+- name: Create Caddyfile
+  template:
+    src: templates/Caddyfile.j2
+    dest: "{{ caddy_dir }}/Caddyfile"
+    mode: '0644'
+  notify: format_caddyfile
+
+- name: Create Caddy systemd service
+  template:
+    src: templates/caddy.service.j2
+    dest: "{{ systemd_user_dir }}/caddy.service"
+    mode: '0644'
+
+- name: Add localhost entries to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "127.0.0.1    {{ services | map(attribute='hostname') | join(' ') }}"
+    state: present
+  become: yes

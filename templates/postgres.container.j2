@@ -1,0 +1,13 @@
+[Unit]
+Description=PostgreSQL database
+
+[Container]
+Image=docker.io/postgres:16
+Pod=dev.pod
+Environment=POSTGRES_USER={{ postgres_user }}
+Environment=POSTGRES_PASSWORD={{ postgres_password }}
+Environment=POSTGRES_DB={{ postgres_db | default('postgres') }}
+Volume=postgres-data:/var/lib/postgresql/data
+
+[Install]
+WantedBy=default.target

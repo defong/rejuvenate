@@ -1,0 +1,6 @@
+---
+- name: Install required packages
+  pacman:
+    name: [podman, caddy, systemd]
+    state: present
+  become: yes

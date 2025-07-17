@@ -1,0 +1,4 @@
+---
+- name: format_caddyfile
+  command: caddy fmt --overwrite {{ caddy_dir }}/Caddyfile
+  listen: format_caddyfile

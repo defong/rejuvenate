@@ -1,0 +1,30 @@
+---
+- name: Reload systemd daemon for user
+  systemd:
+    daemon_reload: yes
+    scope: user
+
+- name: Enable and start pod service
+  systemd:
+    name: dev-pod.service
+    enabled: yes
+    state: started
+    scope: user
+
+- name: Enable and start container services
+  systemd:
+    name: "{{ item }}.service"
+    enabled: yes
+    state: started
+    scope: user
+  loop:
+    - postgres
+    - pgadmin
+    - dashy
+
+- name: Enable and start Caddy service
+  systemd:
+    name: caddy.service
+    enabled: yes
+    state: started
+    scope: user

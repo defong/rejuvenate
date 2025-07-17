@@ -1,0 +1,10 @@
+---
+- name: Create configuration directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - "{{ quadlet_dir }}"
+    - "{{ systemd_user_dir }}"
+    - "{{ caddy_dir }}"

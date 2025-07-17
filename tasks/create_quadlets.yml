@@ -1,0 +1,16 @@
+---
+- name: Create pod quadlet file
+  template:
+    src: templates/dev.pod.j2
+    dest: "{{ quadlet_dir }}/dev.pod"
+    mode: '0644'
+
+- name: Create container quadlet files
+  template:
+    src: "templates/{{ item }}.container.j2"
+    dest: "{{ quadlet_dir }}/{{ item }}.container"
+    mode: '0644'
+  loop:
+    - postgres
+    - pgadmin
+    - dashy

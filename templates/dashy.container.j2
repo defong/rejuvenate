@@ -1,0 +1,10 @@
+[Unit]
+Description=Dashy dashboard
+
+[Container]
+Image=docker.io/lissy93/dashy:latest
+Pod=dev.pod
+Volume={{ caddy_dir }}/dashy-config.yml:/app/user-data/conf.yml:ro
+
+[Install]
+WantedBy=default.target

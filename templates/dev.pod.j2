@@ -1,0 +1,8 @@
+[Unit]
+Description=Development pod
+
+[Pod]
+Network=pasta:-t,{{ postgres_port }},-t,{{ pgadmin_port }},-t,{{ dashy_port }}
+
+[Install]
+WantedBy=default.target

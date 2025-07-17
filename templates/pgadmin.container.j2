@@ -1,0 +1,13 @@
+[Unit]
+Description=pgAdmin web interface
+
+[Container]
+Image=docker.io/dpage/pgadmin4:latest
+Pod=dev.pod
+Environment=PGADMIN_DEFAULT_EMAIL={{ pgadmin_email }}
+Environment=PGADMIN_DEFAULT_PASSWORD={{ pgadmin_password }}
+Environment=PGADMIN_LISTEN_PORT={{ pgadmin_port }}
+Volume=pgadmin-data:/var/lib/pgadmin
+
+[Install]
+WantedBy=default.target
