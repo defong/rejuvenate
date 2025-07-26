@@ -47,3 +47,15 @@
     - containers
     - podman
     - config
+
+- name: Create Syncthing quadlet
+  template:
+    src: templates/syncthing.container.j2
+    dest: "{{ quadlet_dir }}/syncthing.container"
+    mode: '0644'
+  tags:
+    - quadlets
+    - syncthing
+    - containers
+    - podman
+    - config

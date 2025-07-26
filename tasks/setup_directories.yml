@@ -1,5 +1,5 @@
 ---
-- name: Create configuration directories
+- name: Create directories
   file:
     path: "{{ item }}"
     state: directory
@@ -8,6 +8,8 @@
     - "{{ quadlet_dir }}"
     - "{{ systemd_user_dir }}"
     - "{{ caddy_dir }}"
+    - "{{ syncthing_config_dir }}"
+    - "{{ shared_data_dir }}"
   tags:
     - directories
     - setup

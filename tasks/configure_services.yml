@@ -56,6 +56,18 @@
     - systemd
     - dashboard
 
+- name: Enable and start Syncthing service
+  systemd:
+    name: syncthing.service
+    enabled: yes
+    state: started
+    scope: user
+  tags:
+    - services
+    - start
+    - systemd
+    - syncthing
+
 - name: Enable and start Caddy service
   systemd:
     name: caddy.service

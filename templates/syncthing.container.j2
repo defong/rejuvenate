@@ -1,0 +1,22 @@
+[Install]
+WantedBy=default.target
+
+[Unit]
+Description=Syncthing
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=docker.io/linuxserver/syncthing:1.30.0
+Pod=dev.pod
+
+Volume={{ syncthing_config_dir }}:/config:Z
+Volume={{ shared_data_dir }}:/var/syncthing/data:Z
+
+# Environment
+Environment=PUID=1000
+Environment=PGID=1000
+Environment=TZ=UTC
+
+[Service]
+TimeoutStartSec=900

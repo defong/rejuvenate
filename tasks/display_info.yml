@@ -6,7 +6,7 @@
       {% for service in services %}
       {{ service.description }}: {{ service.url }}
       {% endfor %}
-      PostgreSQL: {{ base_hostname }}:{{ postgres_port }}
+      PostgreSQL: {{ base_hostname }}:{{ ports.postrges }}
       Credentials: pgAdmin={{ pgadmin_email }}/{{ pgadmin_password }}, PostgreSQL={{ postgres_user }}/{{ postgres_password }}
   tags:
     - info

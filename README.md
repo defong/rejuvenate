@@ -87,6 +87,7 @@ ansible-playbook site.yml -K --tags "packages,directories,quadlets"
 After successful deployment, access services at:
 - **Dashboard**: http://dashy.localhost
 - **pgAdmin**: http://pgadmin.localhost
+- **Dashboard**: http://syncthing.localhost
 - **PostgreSQL**: localhost:5432 (direct connection)
 
 ## Available Tags
@@ -227,7 +228,7 @@ rm -rf /home/defong/.config/systemd/user/caddy.service
 rm -rf /home/defong/.local/share/caddy/
 
 # Remove /etc/hosts entries (manual)
-sudo sed -i '/dashy.localhost\|pgadmin.localhost/d' /etc/hosts
+sudo sed -i '/dashy.localhost\|pgadmin.localhost\|syncthing.localhost/d' /etc/hosts
 ```
 
 ## Generated Documentation
@@ -238,6 +239,6 @@ ansible-playbook site.yml -K --tags "info"
 ```
 
 ---
-*Last generated: 2025-07-17T20:15:05Z*
+*Last generated: 2025-07-26T12:58:08Z*
 *Project path: /home/defong/Repos/Personal/rejuvenate*
 

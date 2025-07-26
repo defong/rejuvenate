@@ -9,6 +9,9 @@ quadlet_dir: "{{ config_dir }}/containers/systemd"
 systemd_user_dir: "{{ config_dir }}/systemd/user"
 caddy_dir: "{{ user_home }}/.local/share/caddy"
 
+syncthing_config_dir: "{{ config_dir }}/syncthing"
+shared_data_dir: "{{ user_home }}/shared-notes"
+
 # Project paths
 project_dir: "{{ playbook_dir }}"
 readme_path: "/home/defong/Repos/Personal/rejuvenate/README.md"
@@ -21,22 +24,31 @@ pgadmin_email: "admin@test.com"
 pgadmin_password: "admin"
 
 # Network configuration
-postgres_port: 5432
-pgadmin_port: 5050
-dashy_port: 8080
+ports:
+  postrges: 5432
+  pgadmin: 5050
+  dashy: 8080
+  syncthing_gui: 8384
+  syncthing_sync_traffic: 22000
+  syncthing_local_discovery: 21027
 
 # Service hostnames
 services:
   - name: "dashy"
     hostname: "dashy.localhost"
-    port: "{{ dashy_port }}"
+    port: "{{ ports.dashy }}"
     url: "http://dashy.localhost"
     description: "Dashboard"
   - name: "pgadmin"
     hostname: "pgadmin.localhost"
-    port: "{{ pgadmin_port }}"
+    port: "{{ ports.pgadmin }}"
     url: "http://pgadmin.localhost"
     description: "pgAdmin"
+  - name: "syncthing"
+    hostname: "syncthing.localhost"
+    port: "{{ ports.syncthing_gui }}"
+    url: "http://syncthing.localhost"
+    description: "Dashboard"
 
 # Base hostname for /etc/hosts
 base_hostname: "localhost"

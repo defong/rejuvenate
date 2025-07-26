@@ -72,6 +72,7 @@ ansible-playbook site.yml -K --tags "start"
 # Setup Caddy components only
 ansible-playbook site.yml -K --tags "caddy"
 
+
 # Database-related tasks only
 ansible-playbook site.yml -K --tags "database"
 
@@ -88,7 +89,7 @@ After successful deployment, access services at:
 {% for service in services %}
 - **{{ service.description }}**: {{ service.url }}
 {% endfor %}
-- **PostgreSQL**: {{ base_hostname }}:{{ postgres_port }} (direct connection)
+- **PostgreSQL**: {{ base_hostname }}:{{ ports.postrges }} (direct connection)
 
 ## Available Tags
 

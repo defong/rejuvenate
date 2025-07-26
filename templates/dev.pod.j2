@@ -2,7 +2,14 @@
 Description=Development pod
 
 [Pod]
-Network=pasta:-t,{{ postgres_port }},-t,{{ pgadmin_port }},-t,{{ dashy_port }}
+Network=pasta:\
+    -t,{{ ports.postrges }},\
+    -t,{{ ports.pgadmin }},\
+    -t,{{ ports.dashy }},\
+    -t,{{ ports.syncthing_gui }},\
+    -t,{{ ports.syncthing_sync_traffic }},\
+    -u,{{ ports.syncthing_sync_traffic }},\
+    -u,{{ ports.syncthing_local_discovery }}
 
 [Install]
 WantedBy=default.target

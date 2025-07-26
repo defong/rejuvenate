@@ -3,19 +3,23 @@ pageInfo:
   description: Local development services
 
 sections:
-  - name: Database
+  - name: Services
     items:
       - title: pgAdmin
         url: http://pgadmin.localhost
         icon: hl-pgadmin
         description: PostgreSQL administration
+      - title: Syncthing
+        url: http://syncthing.localhost
+        icon: hl-syncthing
+        description: Syncthing administration
 
   - name: Database Connection Info
     items:
       - title: PostgreSQL
         description: |
           Host: localhost
-          Port: {{ postgres_port }}
+          Port: {{ ports.postrges }}
           Database: {{ postgres_db | default('postgres') }}
           User: {{ postgres_user }}
           Password: {{ postgres_password }}
